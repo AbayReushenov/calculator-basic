@@ -1,22 +1,33 @@
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(name = "calc", version, about = "CLI калькулятор на Rust")]
+struct Cli {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    Add { a: f64, b: f64 },
+    Sub { a: f64, b: f64 },
+    Mul { a: f64, b: f64 },
+    Div { a: f64, b: f64 },
+}
+
 fn main() {
-    // Иммутабельность и shadowing
-    let x = 5;
-    let x = x + 1; // shadowing — новое связывание
-    // let mut x = 5; x = 6; // альтернатива: mut
-
-    // Константа
-    const MAX_OPS: usize = 1000;
-
-    // Скалярные
-    let a: i32 = -42;
-    let b: f64 = 3.14;
-    let ok: bool = true;
-    let ch: char = 'ℝ';
-
-    // Составные
-    let tup: (i32, f64, char) = (500, 6.4, 'z');
-    let (i, f, c) = tup; // деструктуризация
-    let arr: [i32; 4] = [1, 2, 3, 4];
-
-    println!("{x} {MAX_OPS} {a} {b} {ok} {ch} {i} {f} {c} {:?}", arr);
+    let cli = Cli::parse();
+    let result = match cli.command {
+        Command::Add { a, b } => a + b,
+        Command::Sub { a, b } => a - b,
+        Command::Mul { a, b } => a * b,
+        Command::Div { a, b } => {
+            if b == 0.0 {
+                eprintln!("Division by zero");
+                std::process::exit(3);
+            }
+            a / b
+        }
+    };
+    println!("{result}");
 }
